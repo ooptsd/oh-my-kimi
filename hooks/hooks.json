@@ -1,0 +1,155 @@
+{
+  "description": "omk orchestration hooks (Kimi-compatible subset of OMC upstream)",
+  "hooks": [
+    {
+      "event": "UserPromptSubmit",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/keyword-detector.mjs",
+      "timeout": 30
+    },
+    {
+      "event": "UserPromptSubmit",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/skill-injector.mjs",
+      "timeout": 30
+    },
+    {
+      "event": "SessionStart",
+      "matcher": "startup",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/session-start.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "SessionStart",
+      "matcher": "startup",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/project-memory-session.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "SessionStart",
+      "matcher": "startup",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/wiki-session-start.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "SessionStart",
+      "matcher": "init",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/setup-init.mjs",
+      "timeout": 30
+    },
+    {
+      "event": "SessionStart",
+      "matcher": "maintenance",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/setup-maintenance.mjs",
+      "timeout": 60
+    },
+    {
+      "event": "PreToolUse",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/pre-tool-enforcer.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "PermissionRequest",
+      "matcher": "Bash",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/permission-handler.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/post-tool-verifier.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/project-memory-posttool.mjs",
+      "timeout": 3
+    },
+    {
+      "event": "PostToolUse",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/post-tool-rules-injector.mjs",
+      "timeout": 3
+    },
+    {
+      "event": "PostToolUseFailure",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/post-tool-use-failure.mjs",
+      "timeout": 3
+    },
+    {
+      "event": "SubagentStart",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/subagent-tracker.mjs start",
+      "timeout": 3
+    },
+    {
+      "event": "SubagentStop",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/subagent-tracker.mjs stop",
+      "timeout": 5
+    },
+    {
+      "event": "SubagentStop",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/verify-deliverables.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "PreCompact",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/pre-compact.mjs",
+      "timeout": 10
+    },
+    {
+      "event": "PreCompact",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/project-memory-precompact.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "PreCompact",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/wiki-pre-compact.mjs",
+      "timeout": 3
+    },
+    {
+      "event": "Stop",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/context-guard-stop.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "Stop",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/workflow-drift-guard.mjs",
+      "timeout": 3
+    },
+    {
+      "event": "Stop",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/persistent-mode.mjs",
+      "timeout": 10
+    },
+    {
+      "event": "Stop",
+      "matcher": "",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/code-simplifier.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "SessionEnd",
+      "matcher": "exit",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/session-end.mjs",
+      "timeout": 30
+    },
+    {
+      "event": "SessionEnd",
+      "matcher": "exit",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/wiki-session-end.mjs",
+      "timeout": 30
+    }
+  ]
+}

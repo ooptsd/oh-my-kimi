@@ -1,0 +1,11 @@
+{
+  "version": "2",
+  "plugins": [
+    {
+      "id": "omk",
+      "displayName": "Oh My Kimi",
+      "source": "https://github.com/ooptsd/oh-my-kimi.git",
+      "description": "Multi-agent orchestration with intelligent model routing across specialized agents and skills"
+    }
+  ]
+}

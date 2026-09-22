@@ -1,0 +1,43 @@
+{
+  "name": "omk",
+  "version": "5.4.0",
+  "description": "Multi-agent orchestration with intelligent model routing across specialized agents and skills (Kimi Code native)",
+  "author": {
+    "name": "ooptsd",
+    "email": "lizhy.gis@gmail.com",
+    "url": "https://github.com/ooptsd/oh-my-kimi"
+  },
+  "homepage": "https://github.com/ooptsd/oh-my-kimi",
+  "repository": "https://github.com/ooptsd/oh-my-kimi",
+  "license": "MIT",
+  "keywords": [
+    "kimi",
+    "plugin",
+    "multi-agent",
+    "orchestration",
+    "automation"
+  ],
+  "interface": {
+    "displayName": "Oh My Kimi",
+    "shortDescription": "Multi-agent orchestration for Kimi Code",
+    "longDescription": "Multi-agent orchestration with intelligent model routing across specialized agents and skills. Brings the omc (oh-my-claudecode) workflow to Kimi Code CLI with 39 skills, 21 slash commands, 19 subagents, 11 hook events, 25 hook commands, and a default-enabled 57-tool MCP server.",
+    "developerName": "ooptsd",
+    "websiteURL": "https://github.com/ooptsd/oh-my-kimi"
+  },
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "commands": "./commands/",
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": {
+    "omk": {
+      "command": "node",
+      "args": [
+        "${KIMI_PLUGIN_ROOT}/bridge/mcp-server.cjs"
+      ],
+      "cwd": "${KIMI_PLUGIN_ROOT}",
+      "env": {
+        "OMC_STATE_DIR": "${KIMI_PLUGIN_ROOT}/.omc"
+      }
+    }
+  }
+}
