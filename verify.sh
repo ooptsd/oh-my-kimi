@@ -97,10 +97,14 @@ ok "agent model fields stripped (check 7): 0 model: opus|sonnet|haiku in agents/
 mcp_args=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$PLUGIN/kimi.plugin.json','utf8')).mcpServers.omk.args[0])")
 [ "$mcp_args" = '${KIMI_PLUGIN_ROOT}/bridge/mcp-launcher.cjs' ] \
     || fail "mcpServers.omk.args[0] = '$mcp_args' (expected \${KIMI_PLUGIN_ROOT}/bridge/mcp-launcher.cjs) (check 8)"
-mcp_env=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$PLUGIN/kimi.plugin.json','utf8')).mcpServers.omk.env.OMC_STATE_DIR)")
-[ "$mcp_env" = '${KIMI_PLUGIN_ROOT}/.omc' ] \
-    || fail "OMC_STATE_DIR = '$mcp_env' (expected \${KIMI_PLUGIN_ROOT}/.omc) (check 8)"
-ok "MCP bridge integrity (check 8): launcher + mcp-server.cjs + KIMI_PLUGIN_ROOT substitution + OMC_STATE_DIR"
+# cwd/env must stay unset: the state layer anchors cross-repository trust on the
+# server process cwd (the session's project directory). Pinning cwd or
+# OMC_STATE_DIR to the plugin root makes every user-project state_write fail
+# the cross-repo guard.
+mcp_extra=$(node -e "const s=JSON.parse(require('fs').readFileSync('$PLUGIN/kimi.plugin.json','utf8')).mcpServers.omk; console.log([s.cwd?'cwd':'', s.env?'env':''].filter(Boolean).join(','))")
+[ -z "$mcp_extra" ] \
+    || fail "mcpServers.omk sets '$mcp_extra' — this anchors state trust to the plugin dir and breaks user-project state access (check 8)"
+ok "MCP bridge integrity (check 8): launcher + mcp-server.cjs + session-cwd launch semantics"
 
 # === Check 9: Brand residue audit ===
 # Functional patterns that MUST still appear (preservation):

@@ -33,11 +33,7 @@
       "command": "node",
       "args": [
         "${KIMI_PLUGIN_ROOT}/bridge/mcp-launcher.cjs"
-      ],
-      "cwd": "${KIMI_PLUGIN_ROOT}",
-      "env": {
-        "OMC_STATE_DIR": "${KIMI_PLUGIN_ROOT}/.omc"
-      }
+      ]
     }
   }
 }
