@@ -35550,7 +35550,12 @@ var init_mode_state_io = __esm({
     import_fs20 = require("fs");
     import_path25 = require("path");
     import_crypto8 = require("crypto");
-    import_better_sqlite3 = __toESM(require("better-sqlite3"), 1);
+    try {
+      import_better_sqlite3 = __toESM(require("better-sqlite3"), 1);
+    } catch {
+      // Optional native dep: lock layer degrades to null when absent.
+      import_better_sqlite3 = { default: null };
+    }
     init_worktree_paths();
     init_process_utils();
     init_atomic_write();

@@ -75,7 +75,7 @@ node -e "
         }
         if (h.command.includes('CLAUDE_PLUGIN_ROOT')) { console.error('FAIL: hook command still has CLAUDE_PLUGIN_ROOT'); process.exit(1); }
     }
-    if (total !== 25) { console.error('FAIL: hook command total ' + total + ' != 25'); process.exit(1); }
+    if (total !== 26) { console.error('FAIL: hook command total ' + total + ' != 26'); process.exit(1); }
     if (events.size !== 11) { console.error('FAIL: distinct events ' + events.size + ' != 11'); process.exit(1); }
     console.log('ok: ' + total + ' hook commands across ' + events.size + ' events; all scripts exist; no CLAUDE_PLUGIN_ROOT residue');
 " || fail "hook cross-reference failed (check 5)"
@@ -93,13 +93,14 @@ ok "agent model fields stripped (check 7): 0 model: opus|sonnet|haiku in agents/
 
 # === Check 8: MCP bridge integrity ===
 [ -f "$PLUGIN/bridge/mcp-server.cjs" ] || fail "bridge/mcp-server.cjs missing"
+[ -f "$PLUGIN/bridge/mcp-launcher.cjs" ] || fail "bridge/mcp-launcher.cjs missing"
 mcp_args=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$PLUGIN/kimi.plugin.json','utf8')).mcpServers.omk.args[0])")
-[ "$mcp_args" = '${KIMI_PLUGIN_ROOT}/bridge/mcp-server.cjs' ] \
-    || fail "mcpServers.omk.args[0] = '$mcp_args' (expected \${KIMI_PLUGIN_ROOT}/bridge/mcp-server.cjs) (check 8)"
+[ "$mcp_args" = '${KIMI_PLUGIN_ROOT}/bridge/mcp-launcher.cjs' ] \
+    || fail "mcpServers.omk.args[0] = '$mcp_args' (expected \${KIMI_PLUGIN_ROOT}/bridge/mcp-launcher.cjs) (check 8)"
 mcp_env=$(node -e "console.log(JSON.parse(require('fs').readFileSync('$PLUGIN/kimi.plugin.json','utf8')).mcpServers.omk.env.OMC_STATE_DIR)")
 [ "$mcp_env" = '${KIMI_PLUGIN_ROOT}/.omc' ] \
     || fail "OMC_STATE_DIR = '$mcp_env' (expected \${KIMI_PLUGIN_ROOT}/.omc) (check 8)"
-ok "MCP bridge integrity (check 8): mcp-server.cjs + KIMI_PLUGIN_ROOT substitution + OMC_STATE_DIR"
+ok "MCP bridge integrity (check 8): launcher + mcp-server.cjs + KIMI_PLUGIN_ROOT substitution + OMC_STATE_DIR"
 
 # === Check 9: Brand residue audit ===
 # Functional patterns that MUST still appear (preservation):
@@ -116,4 +117,25 @@ for pat in '\bomc-doctor\b' '\bomc-setup\b' '\bomc-plan\b'; do
 done
 ok "brand residue audit (check 9): functional identifiers preserved + brand keys removed"
 
-echo "PASS: all 9 verification checks"
+# === Check 10: MCP server boots with ZERO npm dependencies ===
+# Regression guard: the bundled server once had a top-level hard
+# require("better-sqlite3") that crashed the process on fresh installs, so
+# Kimi reported "no OMC state MCP". The require is optional now; run the
+# server from a temp copy (hermetic: no plugin-root/node_modules nearby) and
+# assert the initialize handshake and tool listing succeed.
+SMOKE_DIR="$(mktemp -d)"
+cp "$PLUGIN/bridge/mcp-server.cjs" "$SMOKE_DIR/"
+printf '%s\n%s\n%s\n' \
+    '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"verify","version":"0"}}}' \
+    '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+    '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+    | env -u NODE_PATH node "$SMOKE_DIR/mcp-server.cjs" > "$SMOKE_DIR/out.json" 2>"$SMOKE_DIR/err.txt" \
+    || { cat "$SMOKE_DIR/err.txt" >&2; rm -rf "$SMOKE_DIR"; fail "MCP server exits non-zero without npm deps (check 10)"; }
+grep -q '"serverInfo"' "$SMOKE_DIR/out.json" \
+    || { rm -rf "$SMOKE_DIR"; fail "MCP server initialize handshake failed without npm deps (check 10)"; }
+grep -q 'state_read' "$SMOKE_DIR/out.json" \
+    || { rm -rf "$SMOKE_DIR"; fail "MCP server tool listing missing state tools without npm deps (check 10)"; }
+rm -rf "$SMOKE_DIR"
+ok "MCP server boots + lists tools with zero npm deps (check 10)"
+
+echo "PASS: all 10 verification checks"

@@ -24843,7 +24843,14 @@ function validatePayload(payload, limits = {}) {
 var import_fs14 = require("fs");
 var import_path14 = require("path");
 var import_crypto4 = require("crypto");
-var import_better_sqlite3 = __toESM(require("better-sqlite3"), 1);
+var import_better_sqlite3;
+try {
+  import_better_sqlite3 = __toESM(require("better-sqlite3"), 1);
+} catch {
+  // Optional native dep: the lock layer (sqliteConstructor/openMutationDb)
+  // degrades to null when absent, so the server must boot without it.
+  import_better_sqlite3 = { default: null };
+}
 var localLocks = /* @__PURE__ */ new Map();
 var ownProcessStartIdentityCache = null;
 function ownProcessStartIdentity() {

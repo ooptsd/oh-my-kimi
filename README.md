@@ -36,37 +36,43 @@ git clone https://github.com/ooptsd/oh-my-kimi.git
 kimi --plugin-dir ./oh-my-kimi
 ```
 
-### 2. Install npm dependencies for the MCP server (REQUIRED for full functionality)
+### 2. MCP server dependencies (automatic — nothing to do)
 
-The OMC MCP server (`bridge/mcp-server.cjs`) bundles `ajv`, `zod`, `chalk`, and
-`@modelcontextprotocol/sdk` inline, but it dynamically requires several
-optional native + JS deps for full tool coverage. Install them into the plugin
-directory:
+The MCP server (`bridge/mcp-launcher.cjs` → `bridge/mcp-server.cjs`) bundles all
+of its JavaScript dependencies (`ajv`, `zod`, `chalk`,
+`@modelcontextprotocol/sdk`, …) inline. It has exactly **one optional native
+dependency: `better-sqlite3`**, used by the state-mutation lock layer:
+
+- **Without it** the server still boots and registers all tools; state reads
+  work, but `state_write` / `state_clear` refuse with
+  `state mutation lock unavailable`.
+- **On every session start** the plugin checks for it and, when missing, runs a
+  background `npm install` into `<plugin>/.omc-deps/` (disable with
+  `OMK_AUTO_INSTALL_DEPS=0`). Full state-write capability is available from the
+  next session start — no manual steps, nothing written into the plugin root.
+
+Manual install (offline machines, or to activate immediately without waiting
+for the next session):
 
 ```bash
 # Find your install path (after /plugins install)
 /plugins info omk
 # → installPath listed under details, typically:
-#    ~/.kimi-code/plugins/managed/omk/5.4.0/
+#    ~/.kimi-code/plugins/managed/omk/
 
-PLUGIN_INSTALL=~/.kimi-code/plugins/managed/omk/5.4.0/
-
-# Required (JS deps)
-npm install --prefix "$PLUGIN_INSTALL" ajv chalk zod commander jsonc-parser \
-  safe-regex vscode-languageserver-protocol @modelcontextprotocol/sdk
-
-# Optional native (skip on systems where build fails)
-npm install --prefix "$PLUGIN_INSTALL" @ast-grep/nabi better-sqlite3
+PLUGIN_INSTALL=~/.kimi-code/plugins/managed/omk/
+npm install --prefix "$PLUGIN_INSTALL/.omc-deps" better-sqlite3
 ```
 
-If you skip Step 2, the MCP server starts but registers a reduced tool set.
-Hooks work either way — they only use Node.js stdlib.
+The launcher also picks up deps installed directly into the plugin root
+(`npm install --prefix "$PLUGIN_INSTALL" better-sqlite3`) and the optional
+`@ast-grep/napi` (extra code-search tooling) from either location.
 
 ### 3. Verify
 
 ```bash
 plugins info omk       # should show: 39 skills, 21 commands, 19 agents, 11 hooks
-mcp                     # should show: mcp__omk__* tools (~57)
+mcp                     # should show: mcp__omk__* tools (~55)
 ```
 
 ## What's Included

@@ -33,6 +33,12 @@
     },
     {
       "event": "SessionStart",
+      "matcher": "startup",
+      "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/auto-install-deps.mjs",
+      "timeout": 5
+    },
+    {
+      "event": "SessionStart",
       "matcher": "init",
       "command": "node \"${KIMI_PLUGIN_ROOT}\"/scripts/run.cjs \"${KIMI_PLUGIN_ROOT}\"/scripts/setup-init.mjs",
       "timeout": 30
